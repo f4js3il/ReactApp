@@ -1,0 +1,112 @@
+import React, {Component} from 'react';
+import Aux from '../Hoc/Auxiliary/Auxiliary';
+import Burger from '../Components/Burger/Burger';
+import BuildControls from '../Components/Burger/BuildControls/BuildControls';
+import Modal from '../Components/UI/Modal/Modal';
+import OrderSummary from '../Components/Burger/OrderSummary/OrderSummary';
+import BackDrop from '../Components/UI/BackDrop/BackDrop';
+
+const INGREDIENT_PRICES ={
+    salad: 0.5,
+    cheese:0.4,
+    meat:1.3,
+    bacon:.7
+}
+
+class BurgerBuilder extends Component{
+
+    state = {
+        ingredients:{
+            salad :0,
+            bacon :0,
+            cheese: 0,
+            meat: 0
+        },
+        price : 3,
+        disabledButton: true,
+        purchased: false
+    }
+
+    removeIngredientHandler=(type)=>{
+        const ingredientList= {...this.state.ingredients};
+        if(ingredientList[type]<=0){
+            return;
+        }
+        ingredientList[type] = ingredientList[type]-1;
+        const updatedPrice = this.state.price - INGREDIENT_PRICES[type];
+        this.setState({ingredients:ingredientList,price:updatedPrice})
+        this.isButtonDisabled(ingredientList);
+    }
+
+   
+    addIngredientHandler=(type) =>{
+        console.log(this.state.ingredients);
+        const oldCount = this.state.ingredients[type];
+        const updatedCount = oldCount+1;
+        const updatedIngredients = {...this.state.ingredients};
+        updatedIngredients[type]= updatedCount;
+        const price = INGREDIENT_PRICES[type];
+        const updatedPrice = this.state.price + price;
+        this.setState({ingredients:updatedIngredients, price:updatedPrice});
+       this.isButtonDisabled(updatedIngredients);
+
+    }
+
+    isDisabled=(type)=>{
+        const ingredientList = {...this.state.ingredients};
+        if(ingredientList[type]<=0){
+            return true;
+        }
+        return false;
+    }
+
+    isButtonDisabled=(ingredients)=>{
+        let count = 0;
+        const ingredientList = {...ingredients};
+        for (let key in ingredientList){
+            count = count+ingredientList[key];
+        }
+        this.setState({disabledButton:count<=0})
+    }
+
+    purchaseHandler=()=>{
+        this.setState({purchased:true});
+    }
+
+    purchaseCancelHandler=()=>{
+        this.setState({purchased:false});
+    }
+    purchaseContinueHandler=()=>{
+        this.purchaseCancelHandler();
+        alert('Hurray');
+    }
+
+    render(){
+        const disabledInfo = {...this.state.ingredients};
+        for(let key in disabledInfo){
+            disabledInfo[key]= disabledInfo[key]<=0;
+        }
+        return(
+            <Aux>
+             <BackDrop show={this.state.purchased} purchaseCancel={this.purchaseCancelHandler}/>
+           <Modal show={this.state.purchased}>
+            <OrderSummary ingredients= {this.state.ingredients}
+           purchaseCancel={this.purchaseCancelHandler}
+           purchaseContinue={this.purchaseContinueHandler}
+           price={this.state.price}/>
+           </Modal>
+            <Burger ingredients={this.state.ingredients}/>
+            <BuildControls 
+                ingredientAdded={this.addIngredientHandler}
+                ingredientRemoved={this.removeIngredientHandler}
+                disabledInfo = {disabledInfo}
+                price={this.state.price}
+                disabledButton={this.state.disabledButton}
+                purchased= {this.purchaseHandler}/>
+            </Aux>
+        );
+    }
+
+}
+
+export default BurgerBuilder;

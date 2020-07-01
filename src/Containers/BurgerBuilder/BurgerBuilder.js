@@ -5,7 +5,7 @@ import BuildControls from '../Components/Burger/BuildControls/BuildControls';
 import Modal from '../Components/UI/Modal/Modal';
 import OrderSummary from '../Components/Burger/OrderSummary/OrderSummary';
 //import BackDrop from '../Components/UI/BackDrop/BackDrop';
-import axios from '../../src/axios-orders';
+import axios from '../axios-orders';
 import Spinner from '../Components/UI/Spinner/Spinner';
 import withErrorHandler from '../Hoc/WithErrorHandler/WithErrorHandler';
 

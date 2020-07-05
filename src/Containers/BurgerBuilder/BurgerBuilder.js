@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
-import Aux from '../Hoc/Auxiliary/Auxiliary';
-import Burger from '../Components/Burger/Burger';
-import BuildControls from '../Components/Burger/BuildControls/BuildControls';
-import Modal from '../Components/UI/Modal/Modal';
-import OrderSummary from '../Components/Burger/OrderSummary/OrderSummary';
+import Aux from '../../Hoc/Auxiliary/Auxiliary';
+import Burger from '../../Components/Burger/Burger';
+import BuildControls from '../../Components/Burger/BuildControls/BuildControls';
+import Modal from '../../Components/UI/Modal/Modal';
+import OrderSummary from '../../Components/Burger/OrderSummary/OrderSummary';
 //import BackDrop from '../Components/UI/BackDrop/BackDrop';
-import axios from '../axios-orders';
-import Spinner from '../Components/UI/Spinner/Spinner';
-import withErrorHandler from '../Hoc/WithErrorHandler/WithErrorHandler';
+import axios from '../../axios-orders';
+import Spinner from '../../Components/UI/Spinner/Spinner';
+import withErrorHandler from '../../Hoc/WithErrorHandler/WithErrorHandler';
 
 const INGREDIENT_PRICES ={
     salad: 0.5,
@@ -17,6 +17,8 @@ const INGREDIENT_PRICES ={
 }
 
 class BurgerBuilder extends Component{
+
+    
 
     state = {
         ingredients: null,
@@ -28,6 +30,7 @@ class BurgerBuilder extends Component{
     }
 
     componentDidMount(){
+        console.log("props in BurgerBuiler are", this.props);
         axios.get('ingredients.json')
         .then((response)=> 
         this.setState({ingredients:response.data,
@@ -87,28 +90,16 @@ class BurgerBuilder extends Component{
         this.setState({purchased:false});
     }
     purchaseContinueHandler=()=>{
-        this.setState({loading: true});
-        const order = {
-            ingredients: this.state.ingredients,
-            price: this.state.price,
-            customer:{
-                name: 'Shalu',
-                address:{
-                    street: 'McknightRd',
-                    zipCode: 55119,
-                    country: 'Germany'
-                },
-                email: 'test@test.com'  
-            },
-            deliveryMethod: 'fastest'
-
-        }
-
-        axios.post('/orders.json',order)
-        .then(()=> {
-                this.setState({loading: false, purchased: false})
-            })
-        .catch(()=> this.setState({loading: false, purchased: false}));
+        const queryParams = [];
+                for (let i in this.state.ingredients) {
+                    queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]));
+                }
+                queryParams.push('price='+this.state.price.toFixed(2))
+                const queryString = queryParams.join('&');
+                this.props.history.push({
+                    pathname: '/checkout',
+                    search: '?' + queryString
+                });
       
     }
 

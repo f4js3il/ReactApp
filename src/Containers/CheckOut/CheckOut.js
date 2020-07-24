@@ -30,7 +30,6 @@ class CheckOut extends Component {
       />
     </div>)
     }
-    console.log("props in checkOut are", this.props);
     return summary;
   }
 }
